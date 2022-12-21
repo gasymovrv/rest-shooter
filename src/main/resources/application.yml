@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: rest-shooter
+  main:
+    banner-mode: "off"
+    web-application-type: none
+
+integration:
+  rest:
+    internal-services:
+      zeebe-demo: # this will be used for the bean key
+        base-url: http://localhost:8080
+        retry-max-attempts: 10
+        retry-duration: 10
+        enable-logging: false
+
+#logging:
+#  level:
+#    ru.leroymerlin.wecare.restclient.integration: OFF
