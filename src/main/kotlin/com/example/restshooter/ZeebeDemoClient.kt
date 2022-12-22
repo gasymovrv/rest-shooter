@@ -39,13 +39,13 @@ class ZeebeDemoClient(
     suspend fun sendMsg(
         msgName: String,
         correlationKey: String,
-        msgId: String? = null,
+        messageId: String? = null,
         vars: Map<String, Any?> = mapOf()
     ) {
         val request = SendMessageRequest(
             msgName = msgName,
             correlationKey = correlationKey,
-            messageId = msgId,
+            messageId = messageId,
             vars = vars
         )
 

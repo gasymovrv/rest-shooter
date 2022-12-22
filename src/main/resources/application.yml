@@ -10,7 +10,7 @@ integration:
     internal-services:
       zeebe-demo: # this will be used for the bean key
         base-url: http://localhost:8080
-        retry-max-attempts: 10
+        retry-max-attempts: 3
         retry-duration: 10
         enable-logging: false
 

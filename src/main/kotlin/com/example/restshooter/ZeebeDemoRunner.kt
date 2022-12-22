@@ -2,6 +2,7 @@ package com.example.restshooter
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.springframework.boot.CommandLineRunner
@@ -16,8 +17,20 @@ class ZeebeDemoRunner(
     private val mainProcessesRange = 1..100
     private val shortSubprocessesRange = 1..2
     private val longSubprocessesRange = 1..2
+    private val delayMs = 10L
     private val count = AtomicInteger(0)
 
+    /**
+     * Starts with Spring Boot
+     * Sends many requests by REST API
+     *
+     * 'createProcesses()' starts BPMN processes with subprocesses
+     * according to 'mainProcessesRange', 'shortSubprocessesRange' and 'longSubprocessesRange'
+     *
+     * 'completeProcesses()' sends messages as BPMN events which will complete processes
+     *
+     * 'delayMs' sets delay between requests, can be disabled if it sets equal or less than 0
+     */
     override fun run(vararg args: String?) {
         val start = System.currentTimeMillis()
         try {
@@ -31,8 +44,10 @@ class ZeebeDemoRunner(
             val shortSubprocesses = shortSubprocessesRange.count() * mainProcesses
             val longSubprocesses = longSubprocessesRange.count() * mainProcesses
             val simpleProcesses = mainProcesses + shortSubprocesses + longSubprocesses
+
             println("expected main processes count: $mainProcesses")
             println("expected simple processes count: $simpleProcesses")
+            println("delay between requests: $delayMs ms")
             println("execution time: ${(stop - start)} ms")
             println("requests count: ${count.get()}")
         }
@@ -45,12 +60,14 @@ class ZeebeDemoRunner(
             executeRequest {
                 zeebeDemoClient.createMainProcess(key)
             }
+            delayIfNeeded()
 
             for (j in shortSubprocessesRange) {
                 val subprocessKey = "M$i-SP$j"
                 executeRequest {
                     zeebeDemoClient.sendMsgCreateSubprocess(key, subprocessKey)
                 }
+                delayIfNeeded()
             }
 
             for (k in longSubprocessesRange) {
@@ -58,6 +75,7 @@ class ZeebeDemoRunner(
                 executeRequest {
                     zeebeDemoClient.sendMsgCreateSubprocess(key, subprocessKey, "LONG")
                 }
+                delayIfNeeded()
             }
         }
         println("==== processes created ====")
@@ -70,12 +88,14 @@ class ZeebeDemoRunner(
             executeRequest {
                 zeebeDemoClient.sendMsg("MsgCompleteMainProcess", key, key)
             }
+            delayIfNeeded()
 
             for (k in longSubprocessesRange) {
                 val subprocessKey = "M$i-SP$k"
                 executeRequest {
                     zeebeDemoClient.sendMsg("MsgSimpleProcessEvent", subprocessKey, subprocessKey)
                 }
+                delayIfNeeded()
             }
         }
         println("==== processes completed ====")
@@ -90,5 +110,10 @@ class ZeebeDemoRunner(
                 error("FAILED REQUEST: ${e.message}")
             }
         }
+    }
+
+    private suspend fun delayIfNeeded() {
+        if (delayMs <= 0) return
+        delay(delayMs)
     }
 }
