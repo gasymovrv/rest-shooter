@@ -63,7 +63,7 @@ class ZeebeDemoRunner(
             delayIfNeeded()
 
             for (j in shortSubprocessesRange) {
-                val subprocessKey = "M$i-SP$j"
+                val subprocessKey = "M$i-SPS$j"
                 executeRequest {
                     zeebeDemoClient.sendMsgCreateSubprocess(key, subprocessKey)
                 }
@@ -71,7 +71,7 @@ class ZeebeDemoRunner(
             }
 
             for (k in longSubprocessesRange) {
-                val subprocessKey = "M$i-SP$k"
+                val subprocessKey = "M$i-SPL$k"
                 executeRequest {
                     zeebeDemoClient.sendMsgCreateSubprocess(key, subprocessKey, "LONG")
                 }
@@ -91,7 +91,7 @@ class ZeebeDemoRunner(
             delayIfNeeded()
 
             for (k in longSubprocessesRange) {
-                val subprocessKey = "M$i-SP$k"
+                val subprocessKey = "M$i-SPL$k"
                 executeRequest {
                     zeebeDemoClient.sendMsg("MsgSimpleProcessEvent", subprocessKey, subprocessKey)
                 }
